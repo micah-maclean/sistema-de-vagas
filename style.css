@@ -1,0 +1,201 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --dark-blue: #004E8F;
+    --blue : #1A75C1;
+    --red: #E53636;
+    --gray: #a6a6a6;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.nao-visivel {
+    display: none;
+}
+main {
+    max-width: 1280px;
+    margin: auto;
+}
+
+button {
+    cursor: pointer;
+    min-width: 164px;
+    background-color: var(--dark-blue);
+    color: white;
+    border: none;
+    height: 40px;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: var(--blue);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 32px;
+}
+
+label {
+    font-size: 16px;
+    line-height: 24px;
+    margin-bottom: 8px;
+}
+
+input , select{
+    background-color: white;
+    height: 40px;
+    border-radius: 4px;
+    outline: none;
+    border: 1px solid black;
+    padding: 0 16px;
+}
+
+input {
+    appearance: none;
+}
+
+select, input:not(:last-child){
+    margin-bottom: 24px;
+}
+
+.header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--dark-blue);
+    color: white;
+    height: 56px;
+}
+
+.cadastro > *:nth-child(2) {
+    padding: 32px;
+}
+
+.botoes {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.cadastro{
+    margin-top: 154px;
+    border: 2px solid var(--dark-blue);
+    border-radius: 4px;
+}
+
+
+.vagas {
+    margin-top: 82px;
+    border: 2px solid var(--dark-blue);
+    border-radius: 4px;
+}
+
+.vagas > div > ul {
+    list-style: none;
+    margin-bottom: 32px;
+}
+
+.vagas > div > ul > li:not(:last-child){
+    margin-bottom: 16px;
+}
+
+
+.vagas > div > ul > li{
+    cursor: pointer;
+    height: 62px;
+    padding: 16px 32px;
+   display: flex;
+   justify-content: space-between;
+   border: 1px solid black;
+   border-radius: 4px;
+}
+
+.vagas > div > ul > li:hover {
+    background-color: #E0E0E0;
+}
+
+.vagas > div > ul > li > p > span{
+    font-weight: 400;
+}
+.vagas > *:last-child {
+    padding: 32px;
+}
+
+.descricao {
+    margin-top: 40px;
+    min-height: calc(100vh - 80px);
+    border: 1px solid var(--dark-blue);
+    border-radius: 4px;
+}
+
+.descricao > *:last-child {
+    padding: 32px;
+}
+
+.descricao > div > div:first-child {
+    border: 1px solid var(--dark-blue);
+    border-radius: 4px;
+    padding: 24px 32px;
+    margin-bottom: 40px;
+}
+
+.descricao > div > div:last-child{
+    max-width: 896px;
+    margin: auto;
+}
+
+.descricao > div > div:last-child > ul {
+    border: 1px solid black;
+    margin-bottom: 24px;
+}
+.descricao > div > div:last-child > ul > li{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    height: 52px;
+    align-items: center;
+}
+
+.descricao > div > div:last-child > ul > li:not(:first-child){
+    font-size: 20px;
+    line-height: 30px;
+    font-weight: 400;
+    padding: 0 32px;
+}
+
+.descricao > div > *:last-child > ul > li> span:nth-child(2){
+    text-align: center;
+}
+
+.descricao > div > *:last-child > ul > li > button {
+    width: 160px;
+    background-color: var(--red);
+    justify-self: flex-end;
+}
+
+.descricao > div > div:last-child > ul > li:not(:last-child){
+    border-bottom: 1px solid black;
+}
+
+.descricao > div > div:last-child > ul > li:first-child{
+    background-color: var(--dark-blue);
+    color: white;
+    padding:  0 32px;
+}
+
+h2 {
+    text-align: center;
+    font-size: 24px;
+}
