@@ -87,7 +87,7 @@ class Validador {
         const dataNascimento = new Date(ano, parseInt(mes) - 1, dia);
 
         if(dia > 31 || mes > 12 || isNaN(dataNascimento)){
-            return alert('Digite uma data valida.');
+            return;
         }
 
         let idade = hoje.getFullYear() - dataNascimento.getFullYear();
@@ -103,16 +103,18 @@ const validador = new Validador();
 const btnLogin = document.getElementById('btn-login');
 const senhaEsquecida= document.getElementById('senha-esquecida');
 const novoUsuario = document.getElementById('novo-usuario');
+const btnCadastroUsuario = document.getElementById('btn-cadastro-usuario')
 
-const login = () =>{
+const login = (event) =>{
+    event.preventDefault()
     const email = document.getElementById('email-login').value;
     const senha = document.getElementById('senha-login').value;
     console.log(`Email: ${email} + Senha: ${senha}`)
     
-    axios.get(`${BASE_URL}/usuario/${email}`)
+    axios.get(`${BASE_URL}/usuarios`)
    .then( response => {
-        response = response.data;
-
+        let usuarios = response.data
+        console.log(usuarios)
    })
    .catch(error => {
         alert('Usuario não encontrado');
@@ -134,21 +136,26 @@ const esqueceuSenha = () => {
     });
 }
 
-const cadastroUsuario = () =>{
+const mudarParaTelaCadastroUsuario = () => {
     const telaLogin = document.getElementById('login');
     const telaNovoUsuario = document.getElementById('cadastro-usuario');
     
     telaLogin.classList.add('nao-visivel');
     telaNovoUsuario.classList.remove('nao-visivel');
+}
 
+const cadastroUsuario = () =>{
     const nome = document.getElementById('nome').value;
     const email = document.getElementById('email').value;
-    const tipo = document.getElementById('tipo').options[tipo.selectedIndex].value;
+    const tipo = document.getElementById('tipo');
     const senha = document.getElementById('senha').value;
-    const dataNascimento = document.getElementById('dataNascimento').value;
+    const dataNascimento = document.getElementById('data-de-nascimento').value;
+
+    const telaLogin = document.getElementById('login')
+    const telaNovoUsuario = document.getElementById('cadastro-usuario')
 
     
-    if(!nome || !validador.ehNomeValido(nome)) {
+    if(nome === '' || validador.ehNomeValido(nome)) {
         alert('Nome invalido.')
         return;
     } else if(!validador.ehEmailValido(email)) {
@@ -162,16 +169,17 @@ const cadastroUsuario = () =>{
         return;
     }
 
+    const nomeCapitalize = titleCase(nome)
     const dataIso = formataData(dataNascimento);
-    const usuario = new Usuario(tipo, nome, dataIso, email, senha);
+    const tipoSelecionado = tipo.options[tipo.selectedIndex].value
+    const usuario = new Usuario(tipoSelecionado, nomeCapitalize, dataIso, email, senha);
+
     axios.post(`${BASE_URL}/usuarios`, usuario)
-    .then( response =>{
-        console.log(response);
+    .then( () =>{        
         alert('Usuário cadastrado com sucesso');
         telaLogin.classList.remove('nao-visivel');
         telaNovoUsuario.classList.add('nao-visivel');
-    }
-    )
+    })
     .catch( error => {
         console.log(error)
     });
@@ -203,4 +211,5 @@ const formataData = str => {
 
 btnLogin.addEventListener('click', login);
 senhaEsquecida.addEventListener('click', esqueceuSenha);
-novoUsuario.addEventListener('click' , cadastroUsuario);
+novoUsuario.addEventListener('click' , mudarParaTelaCadastroUsuario);
+btnCadastroUsuario.addEventListener('click', cadastroUsuario)
