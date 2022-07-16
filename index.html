@@ -9,7 +9,24 @@
 </head>
 <body>
     <main>
-
+        <section class="login" id="login">
+            <div class="border">
+                <div class="header">
+                    <h1>Login do Sistema</h>
+                </div>
+                <form action="">
+                    <label for="email-login">Email</label>
+                    <input type="text" name="email-login" id="email-login" placeholder="Email">
+                    <label for="senha-login">Senha</label>
+                    <input type="text" name="senha-login" id="senha-login" placeholder="Senha">
+                    <button> Login</button>
+                </form>
+            </div>
+            <div>
+                <a href="">Esqueceu a senha?</a>
+                <a href="">Não possui cadastro?</a>
+            </div>
+        </section>
         <section class="cadastro border nao-visivel" id="cadastro-usuario">
             <div class="header">
                 <h1>Cadastro</h1>
@@ -75,23 +92,28 @@
             </div>
         </section>
 
-        <section class="descricao border" id="descricao-vaga">
+        <section class="descricao border nao-visivel" id="descricao-vaga">
             <div class="header">
                 <h1>Detalhes da Vaga</h1>
             </div>
             <div>
                 <div class="border">
-                    <p>Título:<span>Desenvolvedor</span></p>
-                    <p>Descrição<span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis eos numquam repellat, vel omnis, dolorem alias maxime similique cupiditate officia suscipit mollitia enim doloribus placeat.</span></p>
-                    <p>Remuneração<span>R$5.500,00</span></p>
+                    <p>Título: <span>Desenvolvedor</span></p>
+                    <p>Descrição: <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis eos numquam repellat, vel omnis, dolorem alias maxime similique cupiditate officia suscipit mollitia enim doloribus placeat.</span></p>
+                    <p>Remuneração: <span>R$5.500,00</span></p>
                 </div>
                 
                 <div>
                     <h2>Candidatos da Vaga</h2>
-                    <ul>
+                    <ul class="table"> 
                         <li>
                             <span>Nome</span>
                             <span>Data de Nascimento</span>
+                        </li>
+                        <li>
+                            <span>Tiago Lucas</span>
+                            <span>06/04/1994</span>
+                            <button>Reprovar</button>
                         </li>
                         <li>
                             <span>Tiago Lucas</span>

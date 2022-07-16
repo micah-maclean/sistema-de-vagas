@@ -92,6 +92,30 @@ input:not(:last-child) {
     height: 56px;
 }
 
+.login{
+    max-width: 752px;
+    margin: auto;
+    margin-top: 305px;
+}
+
+.login form{
+    max-width: 300px;
+    margin: 24px auto 32px auto;
+}
+
+.login > div:first-child {
+    margin-bottom: 16px;
+}
+.login > div:last-child {
+    display: flex;
+    justify-content: space-between;
+}
+
+.login a{
+    color: var(--blue);
+    text-decoration: none;
+}
+
 .cadastro>*:nth-child(2) {
     padding: 32px;
 }
@@ -157,52 +181,74 @@ input:not(:last-child) {
     margin-bottom: 40px;
 }
 
+.descricao>div>div:first-child > p {
+    font-weight: 700;
+}
+
+.descricao>div>div:first-child > p:not(:last-child) {
+    margin-bottom: 16px;
+}
+
+.descricao>div>div:first-child > p > span {
+    font-weight: 500;
+}
+
 .descricao>div>div:last-child {
     max-width: 896px;
     margin: auto;
 }
 
-.descricao>div>div:last-child>ul {
-    border: 1px solid black;
+.table {
+    border: 1px solid var(--dark-blue);
+    border-radius: 4px 4px 0 0;
     margin: 24px 0;
 }
 
-.descricao>div>div:last-child>ul>li {
+.table li {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     height: 52px;
     align-items: center;
 }
 
-.descricao>div>div:last-child>ul>li:not(:first-child) {
+.table.recrutador li  {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.table li:not(:first-child) {
     font-size: 20px;
     line-height: 30px;
     font-weight: 400;
-    padding: 0 32px;
+    padding: 0 32px 0 16px;
 }
 
-.descricao>div>*:last-child>ul>li>span:nth-child(2) {
+.table li > span:nth-child(2){
+    text-align: end;
+}
+
+.table.recrutador li > span:nth-child(2) {
     text-align: center;
 }
 
-.descricao>div>*:last-child>ul>li>button {
+.table button {
     width: 160px;
     background-color: var(--red);
     justify-self: flex-end;
 }
 
-.descricao>div>*:last-child>ul>li>button:disabled {
+.table button:disabled {
     background-color: #a6a6a6;
 }
 
-.descricao>div>div:last-child>ul>li:not(:last-child) {
+.table li:not(:last-child){
     border-bottom: 1px solid black;
 }
 
-.descricao>div>div:last-child>ul>li:first-child {
+.table li:first-child {
     background-color: var(--dark-blue);
     color: white;
     padding: 0 32px;
+    border: none;
 }
 
 h2 {
