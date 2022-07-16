@@ -41,6 +41,15 @@ button {
     font-size: 16px;
 }
 
+button:disabled{
+    cursor: not-allowed;
+    background-color: var(--gray);
+}
+
+button:disabled:hover{
+    background-color: var(--gray);
+}
+
 button:hover {
     background-color: var(--blue);
 }
@@ -125,7 +134,6 @@ input:not(:last-child) {
     justify-content: space-between;
 }
 
-
 .cadastro {
     margin-top: 154px;
 }
@@ -165,6 +173,10 @@ input:not(:last-child) {
 
 .vagas>*:last-child {
     padding: 32px;
+}
+
+.vagas.trabalhador .botoes {
+    justify-content: center;
 }
 
 .descricao {
