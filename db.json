@@ -15,7 +15,13 @@
       "dataNascimento": "2001-02-01T02:00:00.000Z",
       "email": "bbbb@gmail.com",
       "senha": "Aabcd1234@",
-      "candidaturas": [],
+      "candidaturas": [
+        {
+          "idVaga": 1,
+          "idCandidato": 2,
+          "reprovado": true
+        }
+      ],
       "id": 2
     },
     {
@@ -62,15 +68,16 @@
       "senha": "Aabcd1234@",
       "candidaturas": [],
       "id": 7
+    },
+    {
+      "tipo": "Trabalhador",
+      "nome": "Henrique",
+      "dataNascimento": "1993-02-01T03:00:00.000Z",
+      "email": "henrique@gmail.com",
+      "senha": "Aabcd1234@",
+      "candidaturas": [],
+      "id": 8
     }
   ],
-  "vagas": [
-    {
-      "titulo": "Testando testando 1,2,3",
-      "remuneracao": "R$2000",
-      "candidatos": [],
-      "descricao": "Fazer um projeto",
-      "id": 1
-    }
-  ]
+  "vagas": []
 }

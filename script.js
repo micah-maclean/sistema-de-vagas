@@ -103,6 +103,7 @@ class Validador {
 }
 
 const validador = new Validador();
+
 const btnLogin = document.getElementById('btn-login');
 const senhaEsquecida = document.getElementById('senha-esquecida');
 const novoUsuario = document.getElementById('novo-usuario');
@@ -161,15 +162,6 @@ const mudarTela = (event) => {
     const telaListaVaga = document.getElementById('lista-vagas');
     const telaDetalheVaga = document.getElementById('descricao-vaga')
 
-    const titulo = document.getElementById('titulo');
-    const descricao = document.getElementById('descricao');
-    const remuneracao = document.getElementById('remuneracao');
-
-    const nome = document.getElementById('nome');
-    const email = document.getElementById('email');
-    const senha = document.getElementById('senha');
-    const dataNascimento = document.getElementById('data-de-nascimento');
-
     switch (telaAtual) {
         case 'btn-login':
             telaLogin.classList.add('nao-visivel');
@@ -179,36 +171,23 @@ const mudarTela = (event) => {
             telaLogin.classList.add('nao-visivel');
             telaNovoUsuario.classList.remove('nao-visivel');
             break;
-        case 'cadastrar-usuario':
-        case 'voltar-login':
+        case 'cadastrar-usuario': case 'voltar-login':
             telaLogin.classList.remove('nao-visivel');
             telaNovoUsuario.classList.add('nao-visivel');
-            // nome.value = '';
-            // email.value = '';
-            // senha.value = '';
-            // dataNascimento.value = '';
             break;
         case 'nova-vaga':
             telaListaVaga.classList.add('nao-visivel');
             telaNovaVaga.classList.remove('nao-visivel');
-            titulo.value = ''
-            descricao.value = ''
-            remuneracao.value = ''
             break;
-        case 'cadastrar-vaga':
-        case 'voltar-lista':
+        case 'cadastrar-vaga': case 'voltar-lista':
             telaListaVaga.classList.remove('nao-visivel');
-            telaNovaVaga.classList.add('nao-visivel');
-            titulo.value = ''
-            descricao.value = ''
-            remuneracao.value = ''
+            telaNovaVaga.classList.add('nao-visivel') ;
             break;
         case 'deslogar':
             telaListaVaga.classList.add('nao-visivel');
             telaLogin.classList.remove('nao-visivel');
             break;
-        case 'voltar-para-lista':
-        case 'deleta-vaga':
+        case 'voltar-para-lista': case 'deleta-vaga':
             telaListaVaga.classList.remove('nao-visivel');
             telaDetalheVaga.classList.add('nao-visivel');
             break;
@@ -258,23 +237,23 @@ const cadastroVaga = event => {
     const titulo = document.getElementById('titulo').value;
     const descricao = document.getElementById('descricao').value;
     const remuneracao = document.getElementById('remuneracao').value;
-
-    if (!titulo || !descricao || !remuneracao) {
-        alert('Todos os campos tem que ser preenchido')
-        return;
-    }
-
-    const vaga = new Vaga(titulo, descricao, remuneracao)
-    axios.post(`${BASE_URL}/vagas`, vaga)
-        .then(() => {
-            listaVagas("Recrutador")
-            mudarTela(event)
-        })
-        .catch(error => {
-            console.log(error)
-        })
-
-
+    
+        if (!titulo || !descricao || !remuneracao) {
+            alert('Todos os campos tem que ser preenchido')
+            return;
+        }
+    
+        const vaga = new Vaga(titulo, descricao, remuneracao)
+        axios.post(`${BASE_URL}/vagas`, vaga)
+            .then(() => {
+                listaVagas("Recrutador")
+                mudarTela(event)
+            })
+            .catch(error => {
+                console.log(error)
+            })
+           
+  
 }
 
 const listaVagas = usuario => {
@@ -324,14 +303,16 @@ const listaVagas = usuario => {
 
             const textSemVagas = document.getElementById('text-sem-vagas')
             if (ul.childElementCount === 0) {
+                ul.classList.add('nao-visivel')
                 textSemVagas.classList.remove('nao-visivel')
             }else {
+                ul.classList.remove('nao-visivel')
                 textSemVagas.classList.add('nao-visivel') 
             }
         })
         .catch(error => {
             console.log(error);
-        })  
+        })
 
         const btnDeslogar = document.getElementById('deslogar')
         btnDeslogar.addEventListener('click', mudarTela);
@@ -359,12 +340,6 @@ const detalheVaga = (usuario, vaga) => {
     descricaoSpan.textContent = vaga.descricao;
     remuneracaoSpan.textContent = vaga.remuneracao;
 
-    if (usuario.tipo === "Recrutador") {
-        btnDescricao.setAttribute('id', 'deleta-vaga');
-        tabela.classList.add('recrutador')
-        btnDescricao.addEventListener('click', () => excluirVaga(event, usuario, vaga));
-    }
-
     if (usuario.tipo === "Trabalhador") {
         if (vaga.candidatos.some(c => c.id === usuario.id)) {
             btnDescricao.textContent = 'Cancelar Candidatura';
@@ -373,6 +348,11 @@ const detalheVaga = (usuario, vaga) => {
             btnDescricao.textContent = 'Candidatar-se';
             btnDescricao.addEventListener('click', () => adicionarCandidatura(usuario, vaga));
         }
+    } else {
+        btnDescricao.textContent = 'Excluir Vaga'
+        btnDescricao.setAttribute('id', 'deleta-vaga');
+        btnDescricao.addEventListener('click', () => excluirVaga(event, usuario, vaga));
+        tabela.classList.add('recrutador')
     }
 
     let filho = tabela.lastElementChild;
@@ -490,7 +470,7 @@ const reprovarCandidato = (usuario, candidato, vaga) => {
             return false;
         });
 
-
+    
     detalheVaga(usuario, vaga)
     return reprovouCandidato && reprovouCandidatura ? alert('Candidatura reprovada com sucesso') : alert('Não foi possível reprovar a candidatura');
 }
@@ -527,7 +507,7 @@ const cancelarCandidatura = (usuario, vaga) => {
 
 const excluirVaga = (event, usuario, vaga) => {
     axios.delete(`${BASE_URL}/vagas/${vaga.id}`)
-        .then(alert('Vaga excluida com sucesso.'))
+    .then(alert('Vaga excluida com sucesso.'))
         .catch(error => console.log(error))
 
     listaVagas(usuario);
@@ -566,7 +546,7 @@ const formatarData = str => {
 
 const formatarDataIso = str => {
     const [ano, mes, dia] = str.split('T')[0].split('-');
-
+    
     return `${dia}/${mes}/${ano}`;
 }
 

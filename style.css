@@ -26,8 +26,21 @@ body {
 }
 
 main {
+    min-height: 100vh;
     max-width: 1280px;
     margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+section {
+    flex: 1;
+}
+
+section:not(.login){
+    min-height: calc(100vh - 80px);
+    margin: 40px 0;
 }
 
 button {
@@ -102,9 +115,9 @@ input:not(:last-child) {
 }
 
 .login{
+    height: fit-content;
     max-width: 752px;
     margin: auto;
-    margin-top: 305px;
 }
 
 .login form{
@@ -132,15 +145,6 @@ input:not(:last-child) {
 .botoes {
     display: flex;
     justify-content: space-between;
-}
-
-.cadastro {
-    margin-top: 154px;
-}
-
-
-.vagas {
-    margin-top: 82px;
 }
 
 .vagas>div>ul {
@@ -177,11 +181,6 @@ input:not(:last-child) {
 
 .vagas.trabalhador .botoes {
     justify-content: center;
-}
-
-.descricao {
-    margin-top: 40px;
-    min-height: calc(100vh - 80px);
 }
 
 .descricao>*:last-child {
@@ -270,6 +269,6 @@ h2 {
 
 h3 {
     text-align: center;
-    padding: 20px;
+    margin-bottom: 20px;
     font-size: 20px;
 }
