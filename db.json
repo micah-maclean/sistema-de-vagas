@@ -20,11 +20,6 @@
           "idVaga": 7,
           "idCandidato": 2,
           "reprovado": true
-        },
-        {
-          "idVaga": 7,
-          "idCandidato": 2,
-          "reprovado": false
         }
       ],
       "id": 2
@@ -57,7 +52,7 @@
         {
           "idVaga": 7,
           "idCandidato": 5,
-          "reprovado": true
+          "reprovado": false
         }
       ],
       "id": 5
@@ -135,30 +130,10 @@
             {
               "idVaga": 7,
               "idCandidato": 5,
-              "reprovado": true
-            }
-          ],
-          "id": 5
-        },
-        {
-          "tipo": "Trabalhador",
-          "nome": "Mauro Fulano De Tal",
-          "dataNascimento": "2001-02-01T02:00:00.000Z",
-          "email": "bbbb@gmail.com",
-          "senha": "Aabcd1234@",
-          "candidaturas": [
-            {
-              "idVaga": 7,
-              "idCandidato": 2,
-              "reprovado": true
-            },
-            {
-              "idVaga": 7,
-              "idCandidato": 2,
               "reprovado": false
             }
           ],
-          "id": 2
+          "id": 5
         }
       ],
       "descricao": "Descricao",
@@ -170,6 +145,13 @@
       "candidatos": [],
       "descricao": "vaga qualquer",
       "id": 8
+    },
+    {
+      "titulo": "Mais um teste",
+      "remuneracao": "R$3.500,00",
+      "candidatos": [],
+      "descricao": "dev",
+      "id": 9
     }
   ]
 }

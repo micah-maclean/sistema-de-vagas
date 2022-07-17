@@ -111,6 +111,10 @@ const btnCadastroUsuario = document.getElementById('cadastrar-usuario');
 const btnCadastroVaga = document.getElementById('cadastrar-vaga');
 const dataInput = document.getElementById('data-de-nascimento');
 const btnDeslogar = document.getElementById('deslogar')
+const remuneracaoInput = document.getElementById('remuneracao')
+const btnVoltarCadastroUsuario = document.getElementById('voltar-login')
+const btnVoltarCadastroVaga = document.getElementById('voltar-lista')
+const btnVoltarDetalhe = document.getElementById('voltar-para-lista')
 
 const login = (event) => {
     const email = document.getElementById('email-login');
@@ -157,6 +161,7 @@ const mudarTela = (event) => {
     const telaNovoUsuario = document.getElementById('cadastro-usuario');
     const telaNovaVaga = document.getElementById('cadastro-vaga');
     const telaListaVaga = document.getElementById('lista-vagas');
+    const telaDetalheVaga = document.getElementById('descricao-vaga')
 
     switch (telaAtual) {
         case 'btn-login':
@@ -167,21 +172,25 @@ const mudarTela = (event) => {
             telaLogin.classList.add('nao-visivel');
             telaNovoUsuario.classList.remove('nao-visivel');
             break;
-        case 'cadastrar-usuario':
+        case 'cadastrar-usuario': case 'voltar-login':
             telaLogin.classList.remove('nao-visivel');
             telaNovoUsuario.classList.add('nao-visivel');
             break;
         case 'nova-vaga':
-            telaListaVaga.classList.add('nao-visivel')
-            telaNovaVaga.classList.remove('nao-visivel')
+            telaListaVaga.classList.add('nao-visivel');
+            telaNovaVaga.classList.remove('nao-visivel');
             break;
-        case 'cadastrar-vaga':
-            telaListaVaga.classList.remove('nao-visivel')
-            telaNovaVaga.classList.add('nao-visivel')
+        case 'cadastrar-vaga': case 'voltar-lista':
+            telaListaVaga.classList.remove('nao-visivel');
+            telaNovaVaga.classList.add('nao-visivel') ;
             break;
         case 'deslogar':
-            telaListaVaga.classList.add('nao-visivel')
+            telaListaVaga.classList.add('nao-visivel');
             telaLogin.classList.remove('nao-visivel');
+            break;
+        case 'voltar-para-lista':
+            telaListaVaga.classList.remove('nao-visivel');
+            telaDetalheVaga.classList.add('nao-visivel');
             break;
     }
 }
@@ -208,7 +217,7 @@ const cadastroUsuario = event => {
     }
 
     const nomeCapitalize = titleCase(nome)
-    const dataIso = formataData(dataNascimento);
+    const dataIso = formatarData(dataNascimento);
     const tipoSelecionado = tipo.options[tipo.selectedIndex].value
     const usuario = new Usuario(tipoSelecionado, nomeCapitalize, dataIso, email, senha);
 
@@ -249,10 +258,10 @@ const listaVagas = usuario => {
         filho.remove();
         filho = ul.lastElementChild;
     }
-    
+
     const telaListaVaga = document.getElementById('lista-vagas');
     const btnVagas = document.getElementById('nova-vaga');
-   
+
     if (usuario.tipo === "Trabalhador") {
         telaListaVaga.classList.add('trabalhador')
         btnVagas.classList.add('nao-visivel');
@@ -294,9 +303,6 @@ const listaVagas = usuario => {
 }
 
 const detalheVaga = (usuario, vaga) => {
-    const ul = document.getElementById('ul-vagas');
-    
-
     const telaListaVaga = document.getElementById('lista-vagas');
     const telaDetalheVaga = document.getElementById('descricao-vaga');
 
@@ -306,6 +312,8 @@ const detalheVaga = (usuario, vaga) => {
     const tituloSpan = document.getElementById('titulo-span');
     const descricaoSpan = document.getElementById('descricao-span');
     const remuneracaoSpan = document.getElementById('remuneracao-span');
+
+    const btnDescricao = document.getElementById('botao-descricao')
 
     tituloSpan.textContent = vaga.titulo;
     descricaoSpan.textContent = vaga.descricao;
@@ -320,50 +328,58 @@ const detalheVaga = (usuario, vaga) => {
         const btnCandidatar = document.getElementById('botao-descricao');
         btnCandidatar.textContent = 'Candidatar-se';
         axios.get(`${BASE_URL}/vagas/${vaga.id}`)
-        .then(response => {
-            if (response.data.candidatos.some(c => c.id === usuario.id)) btnCandidatar.textContent = 'Cancelar Candidatura';
-        }).catch(error => console.log(error));
+            .then(response => {
+                if (response.data.candidatos.some(c => c.id === usuario.id)) btnCandidatar.textContent = 'Cancelar Candidatura';
+            }).catch(error => console.log(error));
 
         btnCandidatar.addEventListener('click', () => adicionarCandidatura(usuario, vaga))
     }
 
     axios.get(`${BASE_URL}/vagas/${vaga.id}`)
-    .then(response => {
-    const tabela = document.getElementById('tabela');
-    let filho = tabela.lastElementChild;
-    while (tabela.childElementCount > 1) {
-        filho.remove();
-        filho = tabela.lastElementChild;
-    }
-        response.data.candidatos.forEach( candidato => {
-            const li = document.createElement('li');
-            const nomeSpan = document.createElement('span');
-            const dataSpan = document.createElement('span');
+        .then(response => {
+            const tabela = document.getElementById('tabela');
+            let filho = tabela.lastElementChild;
+            while (tabela.childElementCount > 1) {
+                filho.remove();
+                filho = tabela.lastElementChild;
+            }
+            response.data.candidatos.forEach(candidato => {
+                    const li = document.createElement('li');
+                    const nomeSpan = document.createElement('span');
+                    const dataSpan = document.createElement('span');
 
-                
-                nomeSpan.textContent = candidato.nome;
-                dataSpan.textContent = candidato.dataNascimento;
 
-                
-                li.append(nomeSpan, dataSpan);
+                    nomeSpan.textContent = candidato.nome;
+                    dataSpan.textContent = formatarDataIso(candidato.dataNascimento);
 
-                if(usuario.tipo === 'Recrutador') {
-                    const reprovar = document.createElement('button');
-                    reprovar.textContent = 'Reprova'
-                    candidato.candidaturas.forEach(candidatura => {
-                        if(candidatura.idVaga === vaga.id && candidatura.reprovado === true) return reprovar.setAttribute('disabled', true);
-                    })
 
-                    reprovar.addEventListener('click', () => { reprovarCandidato(usuario, candidato, vaga);});
-                    li.append(reprovar);
+                    li.append(nomeSpan, dataSpan);
+                    // if(usuario.tipo === 'Trabalhador'){
+                    //     if(usuario.id === candidato.idCandidato && candidato.reprovado === true){
+                    //         nomeSpan.style.color = '#E53636'
+                    //         btnDescricao.setAttribute('disabled', true)
+                    //     } 
+                    // }
+
+                    if (usuario.tipo === 'Recrutador') {
+                        const reprovar = document.createElement('button');
+                        reprovar.textContent = 'Reprova'
+                        candidato.candidaturas.forEach(candidatura => {
+                            if (candidatura.idVaga === vaga.id && candidatura.reprovado === true) return reprovar.setAttribute('disabled', true);
+                        })
+
+                        reprovar.addEventListener('click', () => {
+                            reprovarCandidato(usuario, candidato, vaga);
+                        });
+                        li.append(reprovar);
+                    }
+
+                    tabela.append(li);
                 }
-               
-                tabela.append(li);
-        }
-            
-        )
-    })
-    .catch(error => console.log(error));
+
+            )
+        })
+        .catch(error => console.log(error));
 
 }
 
@@ -373,11 +389,15 @@ const adicionarCandidatura = (usuario, vaga) => {
     usuario.candidaturas.push(candidatura);
     vaga.candidatos.push(usuario);
     const adicionouCandidatura = axios.put(`${BASE_URL}/usuarios/${usuario.id}`, usuario)
-        .then(() => {return true})
+        .then(() => {
+            return true
+        })
         .catch(error => console.log(error));
 
     const adicionouCandidato = axios.put(`${BASE_URL}/vagas/${vaga.id}`, vaga)
-        .then(() => {return true})
+        .then(() => {
+            return true
+        })
         .catch(error => console.log(error));
 
     return adicionouCandidato && adicionouCandidatura ? alert('Candidatura adicionado com sucesso') : alert('Não foi possível adicionar candidatura');
@@ -385,11 +405,11 @@ const adicionarCandidatura = (usuario, vaga) => {
 
 const reprovarCandidato = (usuario, candidato, vaga) => {
     const confirmaReprovacao = confirm(`Tem certeza que quer reprovar ${candidato.nome}?`);
-    
-    if(!confirmaReprovacao) return;
-    
+
+    if (!confirmaReprovacao) return;
+
     const novoStatus = new Candidatura(candidato.id, vaga.id, true);
-    
+
     candidato.candidaturas = candidato.candidaturas.map(candidatura => {
         return (candidatura.idVaga === vaga.id) ? novoStatus : candidatura;
     })
@@ -434,10 +454,29 @@ const adicionarMascaraData = () => {
     }
 }
 
-const formataData = str => {
+const formatarData = str => {
     const [dia, mes, ano] = str.split('/');
 
     return new Date(ano, mes, dia);
+}
+
+const formatarDataIso = str => {
+    const [ano, mes, dia] = str.split('T')[0].split('-');
+
+    return `${dia}/${mes}/${ano}`;
+}
+
+const adicionarMascaraCifrao = () => {
+    const remuneracaoInput = document.getElementById('remuneracao')
+    let remuneracao = remuneracaoInput.value.replaceAll(' ', '')
+
+    switch (remuneracao.length) {
+        case 0:
+            remuneracaoInput.value = `R$${remuneracao.substring(2)}`;
+            break;
+        default:
+            remuneracaoInput.value = remuneracao;
+    }
 }
 
 btnLogin.addEventListener('click', login);
@@ -445,6 +484,10 @@ senhaEsquecida.addEventListener('click', esqueceuSenha);
 novoUsuario.addEventListener('click', mudarTela);
 novaVaga.addEventListener('click', mudarTela)
 btnDeslogar.addEventListener('click', mudarTela);
+btnVoltarCadastroUsuario.addEventListener('click', mudarTela);
+btnVoltarCadastroVaga.addEventListener('click', mudarTela);
+btnVoltarDetalhe.addEventListener('click', mudarTela);
 btnCadastroVaga.addEventListener('click', cadastroVaga);
 btnCadastroUsuario.addEventListener('click', cadastroUsuario);
 dataInput.addEventListener('keyup', adicionarMascaraData);
+remuneracaoInput.addEventListener('keydown', adicionarMascaraCifrao)
