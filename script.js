@@ -110,11 +110,9 @@ const novaVaga = document.getElementById('nova-vaga');
 const btnCadastroUsuario = document.getElementById('cadastrar-usuario');
 const btnCadastroVaga = document.getElementById('cadastrar-vaga');
 const dataInput = document.getElementById('data-de-nascimento');
-const btnDeslogar = document.getElementById('deslogar')
 const remuneracaoInput = document.getElementById('remuneracao')
 const btnVoltarCadastroUsuario = document.getElementById('voltar-login')
 const btnVoltarCadastroVaga = document.getElementById('voltar-lista')
-const btnVoltarDetalhe = document.getElementById('voltar-para-lista')
 
 const login = (event) => {
     const email = document.getElementById('email-login');
@@ -163,6 +161,15 @@ const mudarTela = (event) => {
     const telaListaVaga = document.getElementById('lista-vagas');
     const telaDetalheVaga = document.getElementById('descricao-vaga')
 
+    const titulo = document.getElementById('titulo');
+    const descricao = document.getElementById('descricao');
+    const remuneracao = document.getElementById('remuneracao');
+
+    const nome = document.getElementById('nome');
+    const email = document.getElementById('email');
+    const senha = document.getElementById('senha');
+    const dataNascimento = document.getElementById('data-de-nascimento');
+
     switch (telaAtual) {
         case 'btn-login':
             telaLogin.classList.add('nao-visivel');
@@ -172,23 +179,36 @@ const mudarTela = (event) => {
             telaLogin.classList.add('nao-visivel');
             telaNovoUsuario.classList.remove('nao-visivel');
             break;
-        case 'cadastrar-usuario': case 'voltar-login':
+        case 'cadastrar-usuario':
+        case 'voltar-login':
             telaLogin.classList.remove('nao-visivel');
             telaNovoUsuario.classList.add('nao-visivel');
+            // nome.value = '';
+            // email.value = '';
+            // senha.value = '';
+            // dataNascimento.value = '';
             break;
         case 'nova-vaga':
             telaListaVaga.classList.add('nao-visivel');
             telaNovaVaga.classList.remove('nao-visivel');
+            titulo.value = ''
+            descricao.value = ''
+            remuneracao.value = ''
             break;
-        case 'cadastrar-vaga': case 'voltar-lista':
+        case 'cadastrar-vaga':
+        case 'voltar-lista':
             telaListaVaga.classList.remove('nao-visivel');
-            telaNovaVaga.classList.add('nao-visivel') ;
+            telaNovaVaga.classList.add('nao-visivel');
+            titulo.value = ''
+            descricao.value = ''
+            remuneracao.value = ''
             break;
         case 'deslogar':
             telaListaVaga.classList.add('nao-visivel');
             telaLogin.classList.remove('nao-visivel');
             break;
-        case 'voltar-para-lista': case 'deleta-vaga':
+        case 'voltar-para-lista':
+        case 'deleta-vaga':
             telaListaVaga.classList.remove('nao-visivel');
             telaDetalheVaga.classList.add('nao-visivel');
             break;
@@ -196,30 +216,30 @@ const mudarTela = (event) => {
 }
 
 const cadastroUsuario = event => {
-    const nome = document.getElementById('nome').value;
-    const email = document.getElementById('email').value;
+    const nome = document.getElementById('nome');
+    const email = document.getElementById('email');
     const tipo = document.getElementById('tipo');
-    const senha = document.getElementById('senha').value;
-    const dataNascimento = document.getElementById('data-de-nascimento').value;
+    const senha = document.getElementById('senha');
+    const dataNascimento = document.getElementById('data-de-nascimento');
 
-    if (!nome || validador.ehNomeValido(nome)) {
+    if (!nome.value || validador.ehNomeValido(nome.value)) {
         alert('Nome invalido.')
         return;
-    } else if (!validador.ehEmailValido(email)) {
+    } else if (!validador.ehEmailValido(email.value)) {
         alert('Email invalido')
         return;
-    } else if (!validador.ehIdadeValida(dataNascimento)) {
+    } else if (!validador.ehIdadeValida(dataNascimento.value)) {
         alert('Data Invalida')
         return;
-    } else if (!validador.ehSenhaValida(senha)) {
+    } else if (!validador.ehSenhaValida(senha.value)) {
         alert('Senha invalida')
         return;
     }
 
-    const nomeCapitalize = titleCase(nome)
-    const dataIso = formatarData(dataNascimento);
+    const nomeCapitalize = titleCase(nome.value)
+    const dataIso = formatarData(dataNascimento.value);
     const tipoSelecionado = tipo.options[tipo.selectedIndex].value
-    const usuario = new Usuario(tipoSelecionado, nomeCapitalize, dataIso, email, senha);
+    const usuario = new Usuario(tipoSelecionado, nomeCapitalize, dataIso, email.value, senha.value);
 
     axios.post(`${BASE_URL}/usuarios`, usuario)
         .then(() => {
@@ -227,33 +247,39 @@ const cadastroUsuario = event => {
             mudarTela(event);
         })
         .catch(error => console.log(error));
+
+    nome.value = ''
+    email.value = ''
+    senha.value = ''
+    dataNascimento.value = ''
 }
 
 const cadastroVaga = event => {
     const titulo = document.getElementById('titulo').value;
     const descricao = document.getElementById('descricao').value;
     const remuneracao = document.getElementById('remuneracao').value;
-    
-        if (!titulo || !descricao || !remuneracao) {
-            alert('Todos os campos tem que ser preenchido')
-            return;
-        }
-    
-        const vaga = new Vaga(titulo, descricao, remuneracao)
-        axios.post(`${BASE_URL}/vagas`, vaga)
-            .then(() => {
-                listaVagas("Recrutador")
-                mudarTela(event)
-            })
-            .catch(error => {
-                console.log(error)
-            })
-           
-  
+
+    if (!titulo || !descricao || !remuneracao) {
+        alert('Todos os campos tem que ser preenchido')
+        return;
+    }
+
+    const vaga = new Vaga(titulo, descricao, remuneracao)
+    axios.post(`${BASE_URL}/vagas`, vaga)
+        .then(() => {
+            listaVagas("Recrutador")
+            mudarTela(event)
+        })
+        .catch(error => {
+            console.log(error)
+        })
+
+
 }
 
 const listaVagas = usuario => {
     const ul = document.getElementById('ul-vagas');
+
     let filho = ul.lastElementChild;
     while (filho) {
         filho.remove();
@@ -273,8 +299,6 @@ const listaVagas = usuario => {
 
     axios.get(`${BASE_URL}/vagas`)
         .then(response => {
-            const ul = document.getElementById('ul-vagas');
-
             response.data.forEach(vaga => {
                 const li = document.createElement('li');
                 const titulo = document.createElement('p');
@@ -297,10 +321,20 @@ const listaVagas = usuario => {
 
                 ul.append(li);
             })
+
+            const textSemVagas = document.getElementById('text-sem-vagas')
+            if (ul.childElementCount === 0) {
+                textSemVagas.classList.remove('nao-visivel')
+            }else {
+                textSemVagas.classList.add('nao-visivel') 
+            }
         })
         .catch(error => {
             console.log(error);
-        })
+        })  
+
+        const btnDeslogar = document.getElementById('deslogar')
+        btnDeslogar.addEventListener('click', mudarTela);
 }
 
 const detalheVaga = (usuario, vaga) => {
@@ -317,7 +351,7 @@ const detalheVaga = (usuario, vaga) => {
     const remuneracaoSpan = document.getElementById('remuneracao-span');
 
     const div = document.getElementById('div-botoes');
-    if(div.childElementCount > 1) div.lastElementChild.remove();
+    if (div.childElementCount > 1) div.lastElementChild.remove();
     const btnDescricao = document.createElement('button');
     div.append(btnDescricao);
 
@@ -326,10 +360,9 @@ const detalheVaga = (usuario, vaga) => {
     remuneracaoSpan.textContent = vaga.remuneracao;
 
     if (usuario.tipo === "Recrutador") {
-        btnDescricao.textContent = 'Excluir Vaga'
         btnDescricao.setAttribute('id', 'deleta-vaga');
-        btnDescricao.addEventListener('click', () => excluirVaga(event, usuario, vaga));
         tabela.classList.add('recrutador')
+        btnDescricao.addEventListener('click', () => excluirVaga(event, usuario, vaga));
     }
 
     if (usuario.tipo === "Trabalhador") {
@@ -353,13 +386,12 @@ const detalheVaga = (usuario, vaga) => {
         const nomeSpan = document.createElement('span');
         const dataSpan = document.createElement('span');
 
-
         nomeSpan.textContent = candidato.nome;
         dataSpan.textContent = formatarDataIso(candidato.dataNascimento);
 
 
         li.append(nomeSpan, dataSpan);
-        if(usuario.tipo === 'Trabalhador'){
+        if (usuario.tipo === 'Trabalhador') {
             candidato.candidaturas.forEach(candidatura => {
                 if (candidatura.idVaga === vaga.id && candidatura.reprovado === true && candidato.id === usuario.id) {
                     console.log(usuario.nome)
@@ -385,6 +417,15 @@ const detalheVaga = (usuario, vaga) => {
         tabela.append(li);
     })
 
+    const textSemCandidatos = document.getElementById('text-sem-candidatos')
+    if (tabela.childElementCount === 1) {
+        textSemCandidatos.classList.remove('nao-visivel')
+    } else if (tabela.childElementCount > 1) {
+        textSemCandidatos.classList.add('nao-visivel')
+    }
+
+    const btnVoltarDetalhe = document.getElementById('voltar-para-lista')
+    btnVoltarDetalhe.addEventListener('click', mudarTela);
 }
 
 const adicionarCandidatura = (usuario, vaga) => {
@@ -396,14 +437,20 @@ const adicionarCandidatura = (usuario, vaga) => {
         .then(() => {
             return true
         })
-        .catch(error => {console.log(error); return false;});
+        .catch(error => {
+            console.log(error);
+            return false;
+        });
 
     // const usuarioSimplificado = {nome: usuario.nome, dataNascimento : usuario.dataNascimento, idCandidato:usuario.id} //TODO
     const adicionouCandidato = axios.put(`${BASE_URL}/vagas/${vaga.id}`, vaga)
         .then(() => {
             return true
         })
-        .catch(error => {console.log(error); return false;});
+        .catch(error => {
+            console.log(error);
+            return false;
+        });
 
     detalheVaga(usuario, vaga)
     return adicionouCandidato && adicionouCandidatura ? alert('Candidatura adicionado com sucesso') : alert('Não foi possível adicionar candidatura');
@@ -421,8 +468,13 @@ const reprovarCandidato = (usuario, candidato, vaga) => {
     })
 
     const reprovouCandidatura = axios.put(`${BASE_URL}/usuarios/${candidato.id}`, candidato)
-        .then(() => { return true })
-        .catch(error => {console.log(error); return false;});
+        .then(() => {
+            return true
+        })
+        .catch(error => {
+            console.log(error);
+            return false;
+        });
 
 
     vaga.candidatos = vaga.candidatos.map(c => {
@@ -430,10 +482,15 @@ const reprovarCandidato = (usuario, candidato, vaga) => {
     })
 
     const reprovouCandidato = axios.put(`${BASE_URL}/vagas/${vaga.id}`, vaga)
-        .then(() => { return true })
-        .catch(error => {console.log(error); return false;});
+        .then(() => {
+            return true
+        })
+        .catch(error => {
+            console.log(error);
+            return false;
+        });
 
-    
+
     detalheVaga(usuario, vaga)
     return reprovouCandidato && reprovouCandidatura ? alert('Candidatura reprovada com sucesso') : alert('Não foi possível reprovar a candidatura');
 }
@@ -443,32 +500,40 @@ const cancelarCandidatura = (usuario, vaga) => {
 
     if (!confirmaCancelamento) return;
 
-    usuario.candidaturas = usuario.candidaturas.filter( candidatura => candidatura.idVaga !== vaga.id);
-    vaga.candidatos = vaga.candidatos.filter( candidato => candidato.id !== usuario.id)
+    usuario.candidaturas = usuario.candidaturas.filter(candidatura => candidatura.idVaga !== vaga.id);
+    vaga.candidatos = vaga.candidatos.filter(candidato => candidato.id !== usuario.id)
 
     const cancelouCandidato = axios.put(`${BASE_URL}/usuarios/${usuario.id}`, usuario)
-        .then(() => { return true })
-        .catch(error => {console.log(error); return false;});
+        .then(() => {
+            return true
+        })
+        .catch(error => {
+            console.log(error);
+            return false;
+        });
 
     const cancelouCandidatura = axios.put(`${BASE_URL}/vagas/${vaga.id}`, vaga)
-        .then(() => { return true })
-        .catch(error => {console.log(error); return false;});
-
-    
+        .then(() => {
+            return true
+        })
+        .catch(error => {
+            console.log(error);
+            return false;
+        });
 
     detalheVaga(usuario, vaga)
     return cancelouCandidato && cancelouCandidatura ? alert('Candidatura cancelada com sucesso') : alert('Não foi possível cancelar a candidatura');
-
 }
 
-const excluirVaga = (evento,  usuario, vaga) => {
+const excluirVaga = (event, usuario, vaga) => {
     axios.delete(`${BASE_URL}/vagas/${vaga.id}`)
-    .then(alert('Vaga excluida com sucesso.'))
-    .catch( error => console.log(error))
+        .then(alert('Vaga excluida com sucesso.'))
+        .catch(error => console.log(error))
 
     listaVagas(usuario);
-    mudarTela(evento);
+    mudarTela(event);
 }
+
 const titleCase = str => {
     return str.split(' ').map(p => p[0].toUpperCase() + p.substr(1).toLowerCase()).join(' ');
 }
@@ -501,7 +566,7 @@ const formatarData = str => {
 
 const formatarDataIso = str => {
     const [ano, mes, dia] = str.split('T')[0].split('-');
-    
+
     return `${dia}/${mes}/${ano}`;
 }
 
@@ -522,10 +587,8 @@ btnLogin.addEventListener('click', login);
 senhaEsquecida.addEventListener('click', esqueceuSenha);
 novoUsuario.addEventListener('click', mudarTela);
 novaVaga.addEventListener('click', mudarTela)
-btnDeslogar.addEventListener('click', mudarTela);
 btnVoltarCadastroUsuario.addEventListener('click', mudarTela);
 btnVoltarCadastroVaga.addEventListener('click', mudarTela);
-btnVoltarDetalhe.addEventListener('click', mudarTela);
 btnCadastroVaga.addEventListener('click', cadastroVaga);
 btnCadastroUsuario.addEventListener('click', cadastroUsuario);
 dataInput.addEventListener('keyup', adicionarMascaraData);
