@@ -39,8 +39,8 @@ section {
 }
 
 section:not(.login){
-    min-height: calc(100vh - 80px);
-    margin: 40px 0;
+    margin: 40px 16px;
+    align-self: flex-start;
 }
 
 button {
@@ -181,6 +181,10 @@ input:not(:last-child) {
 
 .vagas.trabalhador .botoes {
     justify-content: center;
+}
+
+.descricao {
+    min-height: calc(100vh - 80px);
 }
 
 .descricao>*:last-child {

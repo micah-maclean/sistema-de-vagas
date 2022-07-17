@@ -162,6 +162,8 @@ const mudarTela = (event) => {
     const telaListaVaga = document.getElementById('lista-vagas');
     const telaDetalheVaga = document.getElementById('descricao-vaga')
 
+    resetarInputs()
+    
     switch (telaAtual) {
         case 'btn-login':
             telaLogin.classList.add('nao-visivel');
@@ -226,11 +228,6 @@ const cadastroUsuario = event => {
             mudarTela(event);
         })
         .catch(error => console.log(error));
-
-    nome.value = ''
-    email.value = ''
-    senha.value = ''
-    dataNascimento.value = ''
 }
 
 const cadastroVaga = event => {
@@ -561,6 +558,24 @@ const adicionarMascaraCifrao = () => {
         default:
             remuneracaoInput.value = remuneracao;
     }
+}
+
+const resetarInputs = () => {
+    const nome = document.getElementById('nome');
+    const email = document.getElementById('email');
+    const senha = document.getElementById('senha');
+    const dataNascimento = document.getElementById('data-de-nascimento');
+    const titulo = document.getElementById('titulo');
+    const descricao = document.getElementById('descricao');
+    const remuneracao = document.getElementById('remuneracao');
+
+    nome.value = ''
+    email.value = ''
+    senha.value = ''
+    dataNascimento.value = ''
+    titulo.value = ''
+    descricao.value = ''
+    remuneracao.value = ''   
 }
 
 btnLogin.addEventListener('click', login);
