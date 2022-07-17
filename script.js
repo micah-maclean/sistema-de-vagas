@@ -188,7 +188,7 @@ const mudarTela = (event) => {
             telaListaVaga.classList.add('nao-visivel');
             telaLogin.classList.remove('nao-visivel');
             break;
-        case 'voltar-para-lista':
+        case 'voltar-para-lista': case 'deleta-vaga':
             telaListaVaga.classList.remove('nao-visivel');
             telaDetalheVaga.classList.add('nao-visivel');
             break;
@@ -229,26 +229,27 @@ const cadastroUsuario = event => {
         .catch(error => console.log(error));
 }
 
-const cadastroVaga = (event) => {
+const cadastroVaga = event => {
     const titulo = document.getElementById('titulo').value;
     const descricao = document.getElementById('descricao').value;
     const remuneracao = document.getElementById('remuneracao').value;
-
-    if (!titulo || !descricao || !remuneracao) {
-        alert('Todos os campos tem que ser preenchido')
-        return;
-    }
-
-    const vaga = new Vaga(titulo, descricao, remuneracao)
-    axios.post(`${BASE_URL}/vagas`, vaga)
-        .then(() => {
-            mudarTela(event)
-            listaVagas("Recrutador")
-        })
-        .catch(error => {
-            console.log(error)
-        })
-
+    
+        if (!titulo || !descricao || !remuneracao) {
+            alert('Todos os campos tem que ser preenchido')
+            return;
+        }
+    
+        const vaga = new Vaga(titulo, descricao, remuneracao)
+        axios.post(`${BASE_URL}/vagas`, vaga)
+            .then(() => {
+                listaVagas("Recrutador")
+                mudarTela(event)
+            })
+            .catch(error => {
+                console.log(error)
+            })
+           
+  
 }
 
 const listaVagas = usuario => {
@@ -305,81 +306,84 @@ const listaVagas = usuario => {
 const detalheVaga = (usuario, vaga) => {
     const telaListaVaga = document.getElementById('lista-vagas');
     const telaDetalheVaga = document.getElementById('descricao-vaga');
+    const tabela = document.getElementById('tabela');
 
     telaListaVaga.classList.add('nao-visivel');
     telaDetalheVaga.classList.remove('nao-visivel');
+    tabela.classList.remove('recrutador')
 
     const tituloSpan = document.getElementById('titulo-span');
     const descricaoSpan = document.getElementById('descricao-span');
     const remuneracaoSpan = document.getElementById('remuneracao-span');
 
-    const btnDescricao = document.getElementById('botao-descricao')
+    const div = document.getElementById('div-botoes');
+    if(div.childElementCount > 1) div.lastElementChild.remove();
+    const btnDescricao = document.createElement('button');
+    div.append(btnDescricao);
 
     tituloSpan.textContent = vaga.titulo;
     descricaoSpan.textContent = vaga.descricao;
     remuneracaoSpan.textContent = vaga.remuneracao;
 
     if (usuario.tipo === "Recrutador") {
-        const tabela = document.getElementById('tabela');
+        btnDescricao.textContent = 'Excluir Vaga'
+        btnDescricao.setAttribute('id', 'deleta-vaga');
+        btnDescricao.addEventListener('click', () => excluirVaga(event, usuario, vaga));
         tabela.classList.add('recrutador')
     }
 
     if (usuario.tipo === "Trabalhador") {
-        const btnCandidatar = document.getElementById('botao-descricao');
-        btnCandidatar.textContent = 'Candidatar-se';
-        axios.get(`${BASE_URL}/vagas/${vaga.id}`)
-            .then(response => {
-                if (response.data.candidatos.some(c => c.id === usuario.id)) btnCandidatar.textContent = 'Cancelar Candidatura';
-            }).catch(error => console.log(error));
-
-        btnCandidatar.addEventListener('click', () => adicionarCandidatura(usuario, vaga))
+        if (vaga.candidatos.some(c => c.id === usuario.id)) {
+            btnDescricao.textContent = 'Cancelar Candidatura';
+            btnDescricao.addEventListener('click', () => cancelarCandidatura(usuario, vaga));
+        } else {
+            btnDescricao.textContent = 'Candidatar-se';
+            btnDescricao.addEventListener('click', () => adicionarCandidatura(usuario, vaga));
+        }
     }
 
-    axios.get(`${BASE_URL}/vagas/${vaga.id}`)
-        .then(response => {
-            const tabela = document.getElementById('tabela');
-            let filho = tabela.lastElementChild;
-            while (tabela.childElementCount > 1) {
-                filho.remove();
-                filho = tabela.lastElementChild;
-            }
-            response.data.candidatos.forEach(candidato => {
-                    const li = document.createElement('li');
-                    const nomeSpan = document.createElement('span');
-                    const dataSpan = document.createElement('span');
+    let filho = tabela.lastElementChild;
+    while (tabela.childElementCount > 1) {
+        filho.remove();
+        filho = tabela.lastElementChild;
+    }
+
+    vaga.candidatos.forEach(candidato => {
+        const li = document.createElement('li');
+        const nomeSpan = document.createElement('span');
+        const dataSpan = document.createElement('span');
 
 
-                    nomeSpan.textContent = candidato.nome;
-                    dataSpan.textContent = formatarDataIso(candidato.dataNascimento);
+        nomeSpan.textContent = candidato.nome;
+        dataSpan.textContent = formatarDataIso(candidato.dataNascimento);
 
 
-                    li.append(nomeSpan, dataSpan);
-                    // if(usuario.tipo === 'Trabalhador'){
-                    //     if(usuario.id === candidato.idCandidato && candidato.reprovado === true){
-                    //         nomeSpan.style.color = '#E53636'
-                    //         btnDescricao.setAttribute('disabled', true)
-                    //     } 
-                    // }
-
-                    if (usuario.tipo === 'Recrutador') {
-                        const reprovar = document.createElement('button');
-                        reprovar.textContent = 'Reprova'
-                        candidato.candidaturas.forEach(candidatura => {
-                            if (candidatura.idVaga === vaga.id && candidatura.reprovado === true) return reprovar.setAttribute('disabled', true);
-                        })
-
-                        reprovar.addEventListener('click', () => {
-                            reprovarCandidato(usuario, candidato, vaga);
-                        });
-                        li.append(reprovar);
-                    }
-
-                    tabela.append(li);
+        li.append(nomeSpan, dataSpan);
+        if(usuario.tipo === 'Trabalhador'){
+            candidato.candidaturas.forEach(candidatura => {
+                if (candidatura.idVaga === vaga.id && candidatura.reprovado === true && candidato.id === usuario.id) {
+                    console.log(usuario.nome)
+                    nomeSpan.style.color = '#E53636';
+                    btnDescricao.setAttribute('disabled', true);
                 }
+            })
+        }
 
-            )
-        })
-        .catch(error => console.log(error));
+        if (usuario.tipo === 'Recrutador') {
+            const reprovar = document.createElement('button');
+            reprovar.textContent = 'Reprova'
+            candidato.candidaturas.forEach(candidatura => {
+                if (candidatura.idVaga === vaga.id && candidatura.reprovado === true) return reprovar.setAttribute('disabled', true);
+            })
+
+            reprovar.addEventListener('click', () => {
+                reprovarCandidato(usuario, candidato, vaga);
+            });
+            li.append(reprovar);
+        }
+
+        tabela.append(li);
+    })
 
 }
 
@@ -392,14 +396,16 @@ const adicionarCandidatura = (usuario, vaga) => {
         .then(() => {
             return true
         })
-        .catch(error => console.log(error));
+        .catch(error => {console.log(error); return false;});
 
+    // const usuarioSimplificado = {nome: usuario.nome, dataNascimento : usuario.dataNascimento, idCandidato:usuario.id} //TODO
     const adicionouCandidato = axios.put(`${BASE_URL}/vagas/${vaga.id}`, vaga)
         .then(() => {
             return true
         })
-        .catch(error => console.log(error));
+        .catch(error => {console.log(error); return false;});
 
+    detalheVaga(usuario, vaga)
     return adicionouCandidato && adicionouCandidatura ? alert('Candidatura adicionado com sucesso') : alert('Não foi possível adicionar candidatura');
 }
 
@@ -414,22 +420,55 @@ const reprovarCandidato = (usuario, candidato, vaga) => {
         return (candidatura.idVaga === vaga.id) ? novoStatus : candidatura;
     })
 
-    axios.put(`${BASE_URL}/usuarios/${candidato.id}`, candidato)
-        .then(alert('Usuario reprovado com sucesso'))
-        .catch(error => console.log(error));
+    const reprovouCandidatura = axios.put(`${BASE_URL}/usuarios/${candidato.id}`, candidato)
+        .then(() => { return true })
+        .catch(error => {console.log(error); return false;});
 
 
     vaga.candidatos = vaga.candidatos.map(c => {
         return (c.id === candidato.id) ? candidato : c;
     })
 
-    axios.put(`${BASE_URL}/vagas/${vaga.id}`, vaga)
-        .then(alert('Usuario reprovado com sucesso'))
-        .catch(error => console.log(error));
+    const reprovouCandidato = axios.put(`${BASE_URL}/vagas/${vaga.id}`, vaga)
+        .then(() => { return true })
+        .catch(error => {console.log(error); return false;});
 
+    
     detalheVaga(usuario, vaga)
+    return reprovouCandidato && reprovouCandidatura ? alert('Candidatura reprovada com sucesso') : alert('Não foi possível reprovar a candidatura');
 }
 
+const cancelarCandidatura = (usuario, vaga) => {
+    const confirmaCancelamento = confirm(`Tem certeza que quer cancelar candidatura?`);
+
+    if (!confirmaCancelamento) return;
+
+    usuario.candidaturas = usuario.candidaturas.filter( candidatura => candidatura.idVaga !== vaga.id);
+    vaga.candidatos = vaga.candidatos.filter( candidato => candidato.id !== usuario.id)
+
+    const cancelouCandidato = axios.put(`${BASE_URL}/usuarios/${usuario.id}`, usuario)
+        .then(() => { return true })
+        .catch(error => {console.log(error); return false;});
+
+    const cancelouCandidatura = axios.put(`${BASE_URL}/vagas/${vaga.id}`, vaga)
+        .then(() => { return true })
+        .catch(error => {console.log(error); return false;});
+
+    
+
+    detalheVaga(usuario, vaga)
+    return cancelouCandidato && cancelouCandidatura ? alert('Candidatura cancelada com sucesso') : alert('Não foi possível cancelar a candidatura');
+
+}
+
+const excluirVaga = (evento,  usuario, vaga) => {
+    axios.delete(`${BASE_URL}/vagas/${vaga.id}`)
+    .then(alert('Vaga excluida com sucesso.'))
+    .catch( error => console.log(error))
+
+    listaVagas(usuario);
+    mudarTela(evento);
+}
 const titleCase = str => {
     return str.split(' ').map(p => p[0].toUpperCase() + p.substr(1).toLowerCase()).join(' ');
 }
@@ -462,7 +501,7 @@ const formatarData = str => {
 
 const formatarDataIso = str => {
     const [ano, mes, dia] = str.split('T')[0].split('-');
-
+    
     return `${dia}/${mes}/${ano}`;
 }
 
