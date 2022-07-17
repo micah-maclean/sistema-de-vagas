@@ -1,30 +1,31 @@
 const BASE_URL = 'http://localhost:3000';
 class Usuario {
     id;
-    tipo;
-    nome;
-    dataNascimento; // salvar como objeto Date e não como string '10/05/1990' por exemplo
-    email;
-    senha;
+    tipo = '';
+    nome = '';
+    dataNascimento = null; // salvar como objeto Date e não como string '10/05/1990' por exemplo
+    email = '';
+    senha = '';
     candidaturas = []; // lista de Candidatura
 
     constructor(tipo, nome, dataNascimento, email, senha) {
-        this.tipo = tipo;
-        this.nome = nome;
-        this.dataNascimento = dataNascimento;
-        this.email = email;
-        this.senha = senha;
+        this.tipo = tipo ? tipo : this.tipo;
+        this.nome = nome ? nome : this.nome;
+        this.dataNascimento = dataNascimento ? dataNascimento : this.dataNascimento;
+        this.email = email ? email : this.email;
+        this.senha = senha ? senha : this.senha;
     }
 }
 
 class Candidatura {
-    idVaga;
-    idCandidato;
+    idVaga = null;
+    idCandidato = null;
     reprovado = false;
 
-    constructor(idCandidato, idVaga) {
-        this.idCandidato = idCandidato;
-        this.idVaga = idVaga;
+    constructor(idCandidato, idVaga, reprovado) {
+        this.idCandidato = idCandidato ? idCandidato : this.idCandidato;
+        this.idVaga = idVaga ? idVaga : this.idVaga;
+        this.reprovado = reprovado ? reprovado : this.reprovado;
     }
 }
 
@@ -112,22 +113,22 @@ const dataInput = document.getElementById('data-de-nascimento');
 const btnDeslogar = document.getElementById('deslogar')
 
 const login = (event) => {
-    let email = document.getElementById('email-login').value;
-    let senha = document.getElementById('senha-login').value;
+    const email = document.getElementById('email-login');
+    const senha = document.getElementById('senha-login');
 
-    axios.get(`${BASE_URL}/usuarios/?email=${email}`)
+    axios.get(`${BASE_URL}/usuarios/?email=${email.value}`)
         .then(response => {
             const usuario = response.data[0]
             const senhaDb = usuario.senha;
 
-            if (senhaDb !== senha) {
+            if (senhaDb !== senha.value) {
                 alert('Senha Incorreta.');
                 return;
             }
             listaVagas(usuario);
             mudarTela(event);
-            email = ''
-            senha = ''
+            email.value = ''
+            senha.value = ''
         })
         .catch(error => {
             alert('Usuario não encontrado');
@@ -178,23 +179,19 @@ const mudarTela = (event) => {
             telaListaVaga.classList.remove('nao-visivel')
             telaNovaVaga.classList.add('nao-visivel')
             break;
-        // case 'deslogar':
-        //     telaListaVaga.classList.add('nao-visivel')
-        //     telaLogin.classList.remove('nao-visivel');
-        //     break;
+        case 'deslogar':
+            telaListaVaga.classList.add('nao-visivel')
+            telaLogin.classList.remove('nao-visivel');
+            break;
     }
 }
 
-const cadastroUsuario = (event) => {
+const cadastroUsuario = event => {
     const nome = document.getElementById('nome').value;
     const email = document.getElementById('email').value;
     const tipo = document.getElementById('tipo');
     const senha = document.getElementById('senha').value;
     const dataNascimento = document.getElementById('data-de-nascimento').value;
-
-    const telaLogin = document.getElementById('login')
-    const telaNovoUsuario = document.getElementById('cadastro-usuario')
-
 
     if (!nome || validador.ehNomeValido(nome)) {
         alert('Nome invalido.')
@@ -218,11 +215,9 @@ const cadastroUsuario = (event) => {
     axios.post(`${BASE_URL}/usuarios`, usuario)
         .then(() => {
             alert('Usuário cadastrado com sucesso');
-            mudarTela(event)
+            mudarTela(event);
         })
-        .catch(error => {
-            console.log(error)
-        });
+        .catch(error => console.log(error));
 }
 
 const cadastroVaga = (event) => {
@@ -254,14 +249,17 @@ const listaVagas = usuario => {
         filho.remove();
         filho = ul.lastElementChild;
     }
-
+    
+    const telaListaVaga = document.getElementById('lista-vagas');
+    const btnVagas = document.getElementById('nova-vaga');
+   
     if (usuario.tipo === "Trabalhador") {
-        const telaListaVaga = document.getElementById('lista-vagas');
         telaListaVaga.classList.add('trabalhador')
-        const btnVagas = document.getElementById('nova-vaga');
         btnVagas.classList.add('nao-visivel');
+    } else {
+        telaListaVaga.classList.remove('trabalhador')
+        btnVagas.classList.remove('nao-visivel');
     }
-
 
     axios.get(`${BASE_URL}/vagas`)
         .then(response => {
@@ -296,6 +294,9 @@ const listaVagas = usuario => {
 }
 
 const detalheVaga = (usuario, vaga) => {
+    const ul = document.getElementById('ul-vagas');
+    
+
     const telaListaVaga = document.getElementById('lista-vagas');
     const telaDetalheVaga = document.getElementById('descricao-vaga');
 
@@ -319,13 +320,50 @@ const detalheVaga = (usuario, vaga) => {
         const btnCandidatar = document.getElementById('botao-descricao');
         btnCandidatar.textContent = 'Candidatar-se';
         axios.get(`${BASE_URL}/vagas/${vaga.id}`)
-            .then(response => {
-                console.log(response.data)
-                if (response.data.candidatos.some(c => c.id === usuario.id)) btnCandidatar.setAttribute('disabled', true);
-            }).catch(error => console.log(error));
+        .then(response => {
+            if (response.data.candidatos.some(c => c.id === usuario.id)) btnCandidatar.textContent = 'Cancelar Candidatura';
+        }).catch(error => console.log(error));
 
         btnCandidatar.addEventListener('click', () => adicionarCandidatura(usuario, vaga))
     }
+
+    axios.get(`${BASE_URL}/vagas/${vaga.id}`)
+    .then(response => {
+    const tabela = document.getElementById('tabela');
+    let filho = tabela.lastElementChild;
+    while (tabela.childElementCount > 1) {
+        filho.remove();
+        filho = tabela.lastElementChild;
+    }
+        response.data.candidatos.forEach( candidato => {
+            const li = document.createElement('li');
+            const nomeSpan = document.createElement('span');
+            const dataSpan = document.createElement('span');
+
+                
+                nomeSpan.textContent = candidato.nome;
+                dataSpan.textContent = candidato.dataNascimento;
+
+                
+                li.append(nomeSpan, dataSpan);
+
+                if(usuario.tipo === 'Recrutador') {
+                    const reprovar = document.createElement('button');
+                    reprovar.textContent = 'Reprova'
+                    candidato.candidaturas.forEach(candidatura => {
+                        if(candidatura.idVaga === vaga.id && candidatura.reprovado === true) return reprovar.setAttribute('disabled', true);
+                    })
+
+                    reprovar.addEventListener('click', () => { reprovarCandidato(usuario, candidato, vaga);});
+                    li.append(reprovar);
+                }
+               
+                tabela.append(li);
+        }
+            
+        )
+    })
+    .catch(error => console.log(error));
 
 }
 
@@ -334,14 +372,42 @@ const adicionarCandidatura = (usuario, vaga) => {
 
     usuario.candidaturas.push(candidatura);
     vaga.candidatos.push(usuario);
-    axios.put(`${BASE_URL}/usuarios/${usuario.id}`, usuario)
-        .then(alert('Sucesso usuario'))
+    const adicionouCandidatura = axios.put(`${BASE_URL}/usuarios/${usuario.id}`, usuario)
+        .then(() => {return true})
         .catch(error => console.log(error));
+
+    const adicionouCandidato = axios.put(`${BASE_URL}/vagas/${vaga.id}`, vaga)
+        .then(() => {return true})
+        .catch(error => console.log(error));
+
+    return adicionouCandidato && adicionouCandidatura ? alert('Candidatura adicionado com sucesso') : alert('Não foi possível adicionar candidatura');
+}
+
+const reprovarCandidato = (usuario, candidato, vaga) => {
+    const confirmaReprovacao = confirm(`Tem certeza que quer reprovar ${candidato.nome}?`);
+    
+    if(!confirmaReprovacao) return;
+    
+    const novoStatus = new Candidatura(candidato.id, vaga.id, true);
+    
+    candidato.candidaturas = candidato.candidaturas.map(candidatura => {
+        return (candidatura.idVaga === vaga.id) ? novoStatus : candidatura;
+    })
+
+    axios.put(`${BASE_URL}/usuarios/${candidato.id}`, candidato)
+        .then(alert('Usuario reprovado com sucesso'))
+        .catch(error => console.log(error));
+
+
+    vaga.candidatos = vaga.candidatos.map(c => {
+        return (c.id === candidato.id) ? candidato : c;
+    })
 
     axios.put(`${BASE_URL}/vagas/${vaga.id}`, vaga)
-        .then(alert('Sucesso'))
+        .then(alert('Usuario reprovado com sucesso'))
         .catch(error => console.log(error));
 
+    detalheVaga(usuario, vaga)
 }
 
 const titleCase = str => {
@@ -378,7 +444,7 @@ btnLogin.addEventListener('click', login);
 senhaEsquecida.addEventListener('click', esqueceuSenha);
 novoUsuario.addEventListener('click', mudarTela);
 novaVaga.addEventListener('click', mudarTela)
-// btnDeslogar.addEventListener('click', mudarTela);
+btnDeslogar.addEventListener('click', mudarTela);
 btnCadastroVaga.addEventListener('click', cadastroVaga);
 btnCadastroUsuario.addEventListener('click', cadastroUsuario);
 dataInput.addEventListener('keyup', adicionarMascaraData);
