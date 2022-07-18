@@ -1,0 +1,85 @@
+{
+  "usuarios": [
+    {
+      "tipo": "Recrutador",
+      "nome": "Princess Peach",
+      "dataNascimento": "1987-02-01T02:00:00.000Z",
+      "email": "princess.peach@gmail.com",
+      "senha": "Vemser#2022",
+      "candidaturas": [],
+      "id": 1
+    },
+    {
+      "tipo": "Trabalhador",
+      "nome": "Mario Bros",
+      "dataNascimento": "1990-02-01T02:00:00.000Z",
+      "email": "mario.bros@gmail.com",
+      "senha": "Vemser#2022",
+      "candidaturas": [
+        {
+          "idVaga": 1,
+          "idCandidato": 2,
+          "reprovado": true
+        }
+      ],
+      "id": 2
+    },
+    {
+      "tipo": "Trabalhador",
+      "nome": "Luigi Bros",
+      "dataNascimento": "1990-02-01T02:00:00.000Z",
+      "email": "luigi.bros@gmail.com",
+      "senha": "Vemser#2022",
+      "candidaturas": [],
+      "id": 3
+    },
+    {
+      "tipo": "Trabalhador",
+      "nome": "Wario Cousin",
+      "dataNascimento": "1987-02-01T02:00:00.000Z",
+      "email": "luigi.cousin@gmail.com",
+      "senha": "Vemser#2022",
+      "candidaturas": [],
+      "id": 4
+    }
+  ],
+  "vagas": [
+    {
+      "titulo": "Dev. Junior Java",
+      "remuneracao": "R$2.500,00",
+      "candidatos": [
+        {
+          "tipo": "Trabalhador",
+          "nome": "Mario Bros",
+          "dataNascimento": "1990-02-01T02:00:00.000Z",
+          "email": "mario.bros@gmail.com",
+          "senha": "Vemser#2022",
+          "candidaturas": [
+            {
+              "idVaga": 1,
+              "idCandidato": 2,
+              "reprovado": true
+            }
+          ],
+          "id": 2
+        }
+      ],
+      "descricao": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quia omnis laboriosam cupiditate perferendis et earum eius nobis totam necessitatibus blanditiis in veritatis nemo sequi amet, voluptate, sunt error eos similique molestias adipisci qui dolore harum illum repudiandae. Iure assumenda quidem, soluta, vero fugit rerum laboriosam beatae incidunt necessitatibus laudantium minus.",
+      "id": 1
+    },
+    {
+      "titulo": "Dev. Junior Front",
+      "remuneracao": "R$2.750,00",
+      "candidatos": [],
+      "descricao": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quia omnis laboriosam cupiditate perferendis et earum eius nobis totam necessitatibus blanditiis in veritatis nemo sequi amet, voluptate, sunt error eos similique molestias adipisci qui dolore harum illum repudiandae. Iure assumenda quidem, soluta, vero fugit rerum laboriosam beatae incidunt necessitatibus laudantium minus.",
+      "id": 4
+    },
+    {
+      "titulo": "UX Designer",
+      "remuneracao": "R$2.750,00",
+      "candidatos": [],
+      "descricao": "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quia omnis laboriosam cupiditate perferendis et earum eius nobis totam necessitatibus blanditiis in veritatis nemo sequi amet, voluptate, sunt error eos similique molestias adipisci qui dolore harum illum repudiandae. Iure assumenda quidem, soluta, vero fugit rerum laboriosam beatae incidunt necessitatibus laudantium minus.",
+      "id": 4
+    }
+  ]
+}

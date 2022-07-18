@@ -47,9 +47,9 @@ class Validador {
 
     ehNomeValido(str) {
         const strSemEspaco = str.replaceAll(' ', '');
-
+    
         return strSemEspaco.split('').every(c => {
-            c.toLowerCase() !== c.toUpperCase()
+            return c.toLowerCase() !== c.toUpperCase()
         })
     }
 
@@ -90,7 +90,7 @@ class Validador {
         const dataNascimento = new Date(ano, parseInt(mes) - 1, dia);
 
         if (dia > 31 || mes > 12 || isNaN(dataNascimento)) {
-            return;
+            return false;
         }
 
         let idade = hoje.getFullYear() - dataNascimento.getFullYear();
@@ -119,6 +119,10 @@ const login = (event) => {
     const email = document.getElementById('email-login');
     const senha = document.getElementById('senha-login');
 
+    if(!email.value || !senha.value) {
+        return alert('Digite o email e senha');
+    } 
+
     axios.get(`${BASE_URL}/usuarios/?email=${email.value}`)
         .then(response => {
             const usuario = response.data[0]
@@ -141,6 +145,10 @@ const login = (event) => {
 
 const esqueceuSenha = () => {
     const email = prompt('Digite o email:');
+
+    if(!email) {
+        return alert('Digite o email');
+    }
 
     axios.get(`${BASE_URL}/usuarios/?email=${email}`)
         .then(response => {
@@ -203,17 +211,17 @@ const cadastroUsuario = event => {
     const senha = document.getElementById('senha');
     const dataNascimento = document.getElementById('data-de-nascimento');
 
-    if (!nome.value || validador.ehNomeValido(nome.value)) {
+    if (!nome.value || !validador.ehNomeValido(nome.value)) {
         alert('Nome invalido.')
         return;
-    } else if (!validador.ehEmailValido(email.value)) {
-        alert('Email invalido')
-        return;
     } else if (!validador.ehIdadeValida(dataNascimento.value)) {
-        alert('Data Invalida')
+        alert('Data Invalida.')
+        return;
+    } else if (!validador.ehEmailValido(email.value)) {
+        alert('Email invalido.')
         return;
     } else if (!validador.ehSenhaValida(senha.value)) {
-        alert('Senha invalida')
+        alert('Senha invalida. A senha deve ter no mínimo 8 caractéres, 1 letra minúscula, 1 letra maiúscula, 1 número, e um 1 caractér especial.')
         return;
     }
 
@@ -503,6 +511,10 @@ const cancelarCandidatura = (usuario, vaga) => {
 }
 
 const excluirVaga = (event, usuario, vaga) => {
+    const confirmarExclusao = confirm('Tem certeza que quer deletar a vaga?');
+
+    if(!confirmarExclusao) return;
+    
     axios.delete(`${BASE_URL}/vagas/${vaga.id}`)
     .then(alert('Vaga excluida com sucesso.'))
         .catch(error => console.log(error))
